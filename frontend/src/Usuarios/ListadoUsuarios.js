@@ -42,6 +42,9 @@ export default function ListadoUsuarios() {
             <th scope="col">Nombre</th>
             <th scope="col">Apellido</th>
             <th scope="col">Email</th>
+            <th scope="col">Rol</th>
+            <th scope="col">Topes Gastos Mensuales</th>
+            <th scope="col">Deuda Maxima</th>
             <th scope="col">Acciones</th>
           </tr>
         </thead>
@@ -53,6 +56,9 @@ export default function ListadoUsuarios() {
                 <td>{usuario.nombreUsuario}</td>
                 <td>{usuario.apellidoUsuario}</td>
                 <td>{usuario.emailUsuario}</td>
+                <td>{usuario.rol?.nombreRol || "No asignado"}</td>
+                <td>{usuario.topeGastos || "No asignado"}</td>
+                <td>{usuario.deudaMaxima || "No asignado"}</td>
                 <td>
                   <div>
                     <Link

@@ -7,26 +7,40 @@ export default function EditarUsuarios() {
   const navegacion = useNavigate();
   const { id } = useParams();
 
+  const [roles, setRoles] =useState([]);
   const [usuario, setUsuario] = useState({
     nombreUsuario: "",
     apellidoUsuario: "",
     emailUsuario: "",
+    rolId: "",
+    topeGastos: "",
+    deudaMaxima: ""
   });
 
-  const { nombreUsuario, apellidoUsuario, emailUsuario } = usuario;
+  const { nombreUsuario, apellidoUsuario, emailUsuario, rolId, topeGastos,deudamaxima} = usuario;
 
-  const cargarUsuarios = useCallback(async () => {
+  useEffect(() =>{
+
+  const cargarUsuarios = async () => {
     try {
       const resultado = await axios.get(`${urlDB}/${id}`);
       setUsuario(resultado.data);
     } catch (error) {
       console.error("Error al cargar usuario", error);
     }
-  }, [id, urlDB]);
+  };
 
-  useEffect(() => {
-    cargarUsuarios();
-  }, [cargarUsuarios]);
+  const cargarRoles =async () => {
+    try{
+      const resultado =await axios.get('http://localhost:8080/tdb-usuario/roles');
+      setRoles(resultado.data);
+    } catch (error){
+      console.error("Error al cargar roles", error);
+    }
+  };
+  cargarRoles();
+  cargarUsuarios();
+},[id]);
 
   const onInputChange = (e) => {
     const { name, value } = e.target;
@@ -88,6 +102,51 @@ export default function EditarUsuarios() {
           />
         </div>
 
+        <div className='mb-3'>
+          <label htmlFor='rolId' className='form-label'>Rol</label>
+          <select            
+            className="form-control"
+            id="rolId"
+            name='rolId'
+            value={rolId}
+            onChange={onInputChange}
+            required
+            >
+              <option value="">Seleccione un Rol</option>
+              {roles.map(rol=>(
+                <option key={rol.id} value={rol.id}>
+                  {rol.nombreRol}
+                </option>
+              ))}
+            </select>
+        </div>
+
+        <div className='mb-3'>
+          <label htmlFor='topeGastos' className='form-label'>Tope de Gastos</label>
+          <input
+            type='number'
+            className='form-control'
+            id='topeGastos'
+            name='topeGastos'
+            value={topeGastos}
+            onChange={onInputChange}
+            required
+          />
+        </div>
+
+        <div className='mb-3'>
+          <label htmlFor='deudaMaxima' className='form-label'>Deuda Máxima</label>
+          <input
+            type='number'
+            className='form-control'
+            id='deudaMaxima'
+            name='deudaMaxima'
+            value={deudaMaxima}
+            onChange={onInputChange}
+            required
+          />
+        </div>
+        
         <div className="container text-center">
           <button type="submit" className="btn btn-primary">Guardar</button>
           <Link to='/' className='btn btn-danger'>Volver</Link>
