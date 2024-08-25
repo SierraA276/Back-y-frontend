@@ -1,13 +1,14 @@
 import axios from 'axios';
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 
 export default function EditarUsuarios() {
   const urlDB = "http://localhost:8080/tdb-usuario/usuarios";
-  const navegacion = useNavigate();
+  const urlRoles = "http://localhost:8080/tdb-usuario/roles";
+  const navigate = useNavigate();
   const { id } = useParams();
 
-  const [roles, setRoles] =useState([]);
+  const [roles, setRoles] = useState([]);
   const [usuario, setUsuario] = useState({
     nombreUsuario: "",
     apellidoUsuario: "",
@@ -17,30 +18,26 @@ export default function EditarUsuarios() {
     deudaMaxima: ""
   });
 
-  const { nombreUsuario, apellidoUsuario, emailUsuario, rolId, topeGastos,deudamaxima} = usuario;
+  const { nombreUsuario, apellidoUsuario, emailUsuario, rolId, topeGastos, deudaMaxima } = usuario;
 
-  useEffect(() =>{
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        // Cargar datos del usuario
+        const resultadoUsuario = await axios.get(`${urlDB}/${id}`);
+        setUsuario(resultadoUsuario.data);
 
-  const cargarUsuarios = async () => {
-    try {
-      const resultado = await axios.get(`${urlDB}/${id}`);
-      setUsuario(resultado.data);
-    } catch (error) {
-      console.error("Error al cargar usuario", error);
-    }
-  };
+        // Cargar roles
+        const resultadoRoles = await axios.get(urlRoles);
+        console.log("Roles cargados:", resultadoRoles.data); // Verifica los roles cargados
+        setRoles(resultadoRoles.data);
+      } catch (error) {
+        console.error("Error al cargar datos", error);
+      }
+    };
 
-  const cargarRoles =async () => {
-    try{
-      const resultado =await axios.get('http://localhost:8080/tdb-usuario/roles');
-      setRoles(resultado.data);
-    } catch (error){
-      console.error("Error al cargar roles", error);
-    }
-  };
-  cargarRoles();
-  cargarUsuarios();
-},[id]);
+    cargarDatos();
+  }, [id]);
 
   const onInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +49,7 @@ export default function EditarUsuarios() {
     try {
       console.log("Datos antes de enviar:", usuario); // Log para verificar los datos antes de enviar
       await axios.put(`${urlDB}/${id}`, usuario);
-      navegacion("/");
+      navigate("/"); // Navegar a la lista de usuarios después de guardar los cambios
     } catch (error) {
       console.error("Error al guardar usuario:", error);
     }
@@ -104,21 +101,21 @@ export default function EditarUsuarios() {
 
         <div className='mb-3'>
           <label htmlFor='rolId' className='form-label'>Rol</label>
-          <select            
+          <select
             className="form-control"
             id="rolId"
             name='rolId'
             value={rolId}
             onChange={onInputChange}
             required
-            >
-              <option value="">Seleccione un Rol</option>
-              {roles.map(rol=>(
-                <option key={rol.id} value={rol.id}>
-                  {rol.nombreRol}
-                </option>
-              ))}
-            </select>
+          >
+            <option value="">Seleccione un Rol</option>
+            {roles.map(rol => (
+              <option key={rol.id} value={rol.id}>
+                {rol.nombreRol}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className='mb-3'>
@@ -146,7 +143,7 @@ export default function EditarUsuarios() {
             required
           />
         </div>
-        
+
         <div className="container text-center">
           <button type="submit" className="btn btn-primary">Guardar</button>
           <Link to='/' className='btn btn-danger'>Volver</Link>

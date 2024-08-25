@@ -20,13 +20,13 @@ export default function ListadoUsuarios() {
   };
 
   const eliminarUsuario = async (id) => {
-    try{ 
-    await axios.delete(`${urlBase}/${id}`);
-    cargarUsuarios();
-    }catch (error){
-    console.error("Error al eliminar usuario",error);
-    alert("Hubo un problema al eliminar el usuario. Por favor, inténtalo de nuevo.");
-  }
+    try {
+      await axios.delete(`${urlBase}/${id}`);
+      cargarUsuarios();
+    } catch (error) {
+      console.error("Error al eliminar usuario:", error);
+      alert("Hubo un problema al eliminar el usuario. Por favor, inténtalo de nuevo.");
+    }
   };
 
   return (
@@ -49,35 +49,33 @@ export default function ListadoUsuarios() {
           </tr>
         </thead>
         <tbody>
-          {
-            usuarios.map((usuario, indice) => (
-              <tr key={indice}>
-                <th scope="row">{usuario.idUsuario}</th>
-                <td>{usuario.nombreUsuario}</td>
-                <td>{usuario.apellidoUsuario}</td>
-                <td>{usuario.emailUsuario}</td>
-                <td>{usuario.rol?.nombreRol || "No asignado"}</td>
-                <td>{usuario.topeGastos || "No asignado"}</td>
-                <td>{usuario.deudaMaxima || "No asignado"}</td>
-                <td>
-                  <div>
-                    <Link
-                      to={`/editar/${usuario.idUsuario}`}
-                      className="btn btn-warning btn-sm me-3"
-                    >
-                      Editar
-                    </Link>
-                    <button 
-                      onClick={() => eliminarUsuario(usuario.idUsuario)}
-                      className="btn btn-danger btn-sm"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))
-          }
+          {usuarios.map((usuario, indice) => (
+            <tr key={indice}>
+              <th scope="row">{usuario.idUsuario}</th>
+              <td>{usuario.nombreUsuario}</td>
+              <td>{usuario.apellidoUsuario}</td>
+              <td>{usuario.emailUsuario}</td>
+              <td>{usuario.nombreRol || "No asignado"}</td>
+              <td>{usuario.topeGastosMensuales?.cantidadMaxima || "No asignado"}</td>
+              <td>{usuario.maximaDeuda?.cantidadMaxima || "No asignado"}</td>
+              <td>
+                <div>
+                  <Link
+                    to={`/editar/${usuario.idUsuario}`}
+                    className="btn btn-warning btn-sm me-3"
+                  >
+                    Editar
+                  </Link>
+                  <button
+                    onClick={() => eliminarUsuario(usuario.idUsuario)}
+                    className="btn btn-danger btn-sm"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
