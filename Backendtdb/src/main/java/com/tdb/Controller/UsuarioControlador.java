@@ -9,6 +9,7 @@ import com.tdb.servicio.IUsuarioServicio;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,12 +35,26 @@ public class UsuarioControlador {
     @Autowired
     private IUsuarioServicio usuarioServicio;
 
-    @GetMapping ("/usuarios")
-    public List <Usuario> obtenerUsuarios(){
-        var usuarios = usuarioServicio.listarUsuarios();
-        usuarios.forEach((usuario -> logger.info(usuario.toString())));
-        return usuarios;
+    @GetMapping("/usuarios")
+    public ResponseEntity<List<Map<String, Object>>> obtenerTodosLosUsuarios() {
+        List<Usuario> usuarios = usuarioServicio.listarUsuarios();
+        
+        // Convertir cada Usuario a un Map aplanado que incluye el rol
+        List<Map<String, Object>> usuariosAplanados = usuarios.stream().map(usuario -> {
+            Map<String, Object> usuarioAplanado = new HashMap<>();
+            usuarioAplanado.put("idUsuario", usuario.getIdUsuario());
+            usuarioAplanado.put("nombreUsuario", usuario.getNombreUsuario());
+            usuarioAplanado.put("apellidoUsuario", usuario.getApellidoUsuario());
+            usuarioAplanado.put("emailUsuario", usuario.getEmailUsuario());
+            usuarioAplanado.put("maximaDeuda", usuario.getMaximaDeuda());
+            usuarioAplanado.put("topeGastosMensuales", usuario.getTopeGastosMensuales());
+            usuarioAplanado.put("nombreRol", usuario.getRol().getNombreRol());
+            return usuarioAplanado;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(usuariosAplanados);
     }
+    
     @PostMapping("/usuarios")
     public Usuario agregarUsuario(@RequestBody Usuario usuario) {
         logger.info("Usuario a agregar: " + usuario);
