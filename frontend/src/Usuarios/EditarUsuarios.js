@@ -4,33 +4,50 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 
 export default function EditarUsuarios() {
   const urlDB = "http://localhost:8080/tdb-usuario/usuarios";
-  const urlRoles = "http://localhost:8080/tdb-usuario/roles";
+  const urlRoles = "http://localhost:8080/tdb-rol/roles";
+  const urlTopeGastos = "http://localhost:8080/tdb-tope-gastos/topes";
+  const urlMaximaDeuda = "http://localhost:8080/tdb-maxima-deuda/deudas";
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [roles, setRoles] = useState([]);
+  const [topeGastos, setTopeGastos] = useState([]);
+  const [deudamaxima, setMaximaDeuda] = useState([]);
   const [usuario, setUsuario] = useState({
     nombreUsuario: "",
     apellidoUsuario: "",
     emailUsuario: "",
-    rolId: "",
-    topeGastos: "",
-    deudaMaxima: ""
+    rol: { idRol: "" },
+    topeGastosMensuales: { cantidadMaxima: "" },
+    maximaDeuda: { cantidadMaxima: "" }
   });
 
-  const { nombreUsuario, apellidoUsuario, emailUsuario, rolId, topeGastos, deudaMaxima } = usuario;
+  const { nombreUsuario, apellidoUsuario, emailUsuario, rol, topeGastosMensuales, maximaDeuda } = usuario;
 
   useEffect(() => {
     const cargarDatos = async () => {
       try {
         // Cargar datos del usuario
         const resultadoUsuario = await axios.get(`${urlDB}/${id}`);
-        setUsuario(resultadoUsuario.data);
+        setUsuario({
+          ...resultadoUsuario.data,
+          rol: resultadoUsuario.data.rol || { idRol: "" },
+          topeGastosMensuales: resultadoUsuario.data.topeGastosMensuales || { cantidadMaxima: "" },
+          maximaDeuda: resultadoUsuario.data.maximaDeuda || { cantidadMaxima: "" }
+        });
 
         // Cargar roles
         const resultadoRoles = await axios.get(urlRoles);
-        console.log("Roles cargados:", resultadoRoles.data); // Verifica los roles cargados
         setRoles(resultadoRoles.data);
+
+        // Cargar tope de gastos
+        const resultadoTopeGastos = await axios.get(urlTopeGastos);
+        setTopeGastos(resultadoTopeGastos.data);
+
+        // Cargar deuda máxima
+        const resultadoMaximaDeuda = await axios.get(urlMaximaDeuda);
+        setMaximaDeuda(resultadoMaximaDeuda.data);
+
       } catch (error) {
         console.error("Error al cargar datos", error);
       }
@@ -41,15 +58,57 @@ export default function EditarUsuarios() {
 
   const onInputChange = (e) => {
     const { name, value } = e.target;
-    setUsuario({ ...usuario, [name]: value });
+    if (name === 'topeGastosMensuales') {
+      setUsuario({
+        ...usuario,
+        topeGastosMensuales: { cantidadMaxima: value }
+      });
+    } else if (name === 'maximaDeuda') {
+      setUsuario({
+        ...usuario,
+        maximaDeuda: { cantidadMaxima: value }
+      });
+    } else {
+      setUsuario({
+        ...usuario,
+        [name]: value
+      });
+    }
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Datos antes de enviar:", usuario); // Log para verificar los datos antes de enviar
-      await axios.put(`${urlDB}/${id}`, usuario);
-      navigate("/"); // Navegar a la lista de usuarios después de guardar los cambios
+      // Verificar si tope de gastos y deuda máxima existen y crear si es necesario
+      let topeGastosId = topeGastosMensuales.idTopeGastosMensuales;
+      if (!topeGastosId) {
+        const resultadoTopeGastos = await axios.post(urlTopeGastos, { cantidadMaxima: topeGastosMensuales.cantidadMaxima });
+        topeGastosId = resultadoTopeGastos.data.idTopeGastosMensuales;
+      }
+
+      let maximaDeudaId = maximaDeuda.idMaximaDeuda;
+      if (!maximaDeudaId) {
+        const resultadoMaximaDeuda = await axios.post(urlMaximaDeuda, { cantidadMaxima: maximaDeuda.cantidadMaxima });
+        maximaDeudaId = resultadoMaximaDeuda.data.idMaximaDeuda;
+      }
+
+      const usuarioActualizado = {
+        ...usuario,
+        topeGastosMensuales: {
+          idTopeGastosMensuales: topeGastosId,
+          cantidadMaxima: topeGastosMensuales.cantidadMaxima
+        },
+        maximaDeuda: {
+          idMaximaDeuda: maximaDeudaId,
+          cantidadMaxima: maximaDeuda.cantidadMaxima
+        }
+      };
+
+      // Actualizar usuario
+      await axios.put(`${urlDB}/${id}`, usuarioActualizado);
+
+      // Navegar a la lista de usuarios después de guardar los cambios
+      navigate("/");
     } catch (error) {
       console.error("Error al guardar usuario:", error);
     }
@@ -58,7 +117,7 @@ export default function EditarUsuarios() {
   return (
     <div className='container'>
       <div className='container text-center' style={{ margin: '30px' }}>
-        <h3>Editar Usuarios</h3>
+        <h3>Editar Usuario</h3>
       </div>
 
       <form onSubmit={onSubmit}>
@@ -100,45 +159,50 @@ export default function EditarUsuarios() {
         </div>
 
         <div className='mb-3'>
-          <label htmlFor='rolId' className='form-label'>Rol</label>
+          <label htmlFor='rol' className='form-label'>Rol</label>
           <select
             className="form-control"
-            id="rolId"
-            name='rolId'
-            value={rolId}
-            onChange={onInputChange}
+            id="rol"
+            name='rol'
+            value={rol.idRol || ""}
+            onChange={(e) => setUsuario({
+              ...usuario,
+              rol: { idRol: e.target.value }
+            })}
             required
           >
             <option value="">Seleccione un Rol</option>
-            {roles.map(rol => (
-              <option key={rol.id} value={rol.id}>
-                {rol.nombreRol}
-              </option>
-            ))}
+            {roles.length > 0 &&
+              roles.map(rolItem => (
+                <option key={rolItem.idRol} value={rolItem.idRol}>
+                  {rolItem.nombreRol}
+                </option>
+              ))
+            }
           </select>
         </div>
 
         <div className='mb-3'>
-          <label htmlFor='topeGastos' className='form-label'>Tope de Gastos</label>
+          <label htmlFor='topeGastosMensuales' className='form-label'>Tope de Gastos</label>
           <input
             type='number'
             className='form-control'
-            id='topeGastos'
-            name='topeGastos'
-            value={topeGastos}
+            id='topeGastosMensuales'
+            name='topeGastosMensuales'
+            value={topeGastosMensuales.cantidadMaxima || ""}
             onChange={onInputChange}
             required
           />
         </div>
 
         <div className='mb-3'>
-          <label htmlFor='deudaMaxima' className='form-label'>Deuda Máxima</label>
+          <label htmlFor='maximaDeuda' className='form-label'>Deuda Máxima</label>
           <input
             type='number'
             className='form-control'
-            id='deudaMaxima'
-            name='deudaMaxima'
-            value={deudaMaxima}
+            id='maximaDeuda'
+            name='maximaDeuda'
+            value={maximaDeuda.cantidadMaxima || ""}
             onChange={onInputChange}
             required
           />

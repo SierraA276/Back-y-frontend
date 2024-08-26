@@ -70,28 +70,33 @@ public class UsuarioControlador {
         return ResponseEntity.ok(usuario);
     }
     
-    @PutMapping("/usuarios/{id}")
-    public  ResponseEntity<Usuario> ModificarUsuarioId(@PathVariable Integer id,@RequestBody Usuario usuarioObj){
-        Usuario usuario = usuarioServicio.buscarUsuarioPorId(id);
-        if (usuario ==null){
-            throw new ExceptionRecursoNoEncontrado("No se encontró el Id del usuario: " + id);
-     }
-        usuario.setNombreUsuario(usuarioObj.getNombreUsuario());
-        usuario.setApellidoUsuario(usuarioObj.getApellidoUsuario());
-        usuario.setEmailUsuario(usuarioObj.getEmailUsuario());
+@PutMapping("/usuarios/{id}")
+public ResponseEntity<Usuario> ModificarUsuarioId(@PathVariable Integer id, @RequestBody Usuario usuarioObj) {
+    Usuario usuario = usuarioServicio.buscarUsuarioPorId(id);
+    if (usuario == null) {
+        throw new ExceptionRecursoNoEncontrado("No se encontró el Id del usuario: " + id);
+    }
+    
+    usuario.setNombreUsuario(usuarioObj.getNombreUsuario());
+    usuario.setApellidoUsuario(usuarioObj.getApellidoUsuario());
+    usuario.setEmailUsuario(usuarioObj.getEmailUsuario());
 
-        if (usuarioObj.getMaximaDeuda() != null) {
+    if (usuarioObj.getMaximaDeuda() != null) {
         usuario.setMaximaDeuda(usuarioObj.getMaximaDeuda());
     }
 
     if (usuarioObj.getTopeGastosMensuales() != null) {
         usuario.setTopeGastosMensuales(usuarioObj.getTopeGastosMensuales());
     }
-        
-        
-        usuarioServicio.guardarUsuario(usuario);
-        return ResponseEntity.ok(usuario);
+    
+    if (usuarioObj.getRol() != null) {
+        usuario.setRol(usuarioObj.getRol());
     }
+    
+    Usuario usuarioActualizado = usuarioServicio.guardarUsuario(usuario);
+    return ResponseEntity.ok(usuarioActualizado);
+}
+
             
     
     @DeleteMapping("/usuarios/{id}")

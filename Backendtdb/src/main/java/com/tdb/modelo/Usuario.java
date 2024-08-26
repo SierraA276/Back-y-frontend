@@ -19,12 +19,11 @@
         private String apellidoUsuario;
         private String emailUsuario;
 
-        @ManyToOne
+        @OneToOne
         @JoinColumn(name = "rol_id", referencedColumnName = "idRol")
-        @JsonBackReference
         private Rol rol;
 
-            @ManyToOne
+        @ManyToOne
         @JoinColumn(name = "maxima_deuda_id", referencedColumnName = "idMaximaDeuda")
         private MaximaDeuda maximaDeuda;
 
