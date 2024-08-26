@@ -22,6 +22,14 @@ export default function EditarUsuarios() {
     maximaDeuda: { cantidadMaxima: "" }
   });
 
+  const [errores, setErrores] = useState({
+    nombreUsuario: "",
+    apellidoUsuario: "",
+    emailUsuario: "",
+    topeGastosMensuales: "",
+    maximaDeuda: ""
+  });
+
   const { nombreUsuario, apellidoUsuario, emailUsuario, rol, topeGastosMensuales, maximaDeuda } = usuario;
 
   useEffect(() => {
@@ -56,8 +64,29 @@ export default function EditarUsuarios() {
     cargarDatos();
   }, [id]);
 
+  const validarCampo = (name, value) => {
+    let mensajeError = "";
+    if (name === 'nombreUsuario' || name === 'apellidoUsuario') {
+      const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+      if (!regex.test(value)) {
+        mensajeError = "Caracteres no permitidos";
+      }
+    } else if (name === 'emailUsuario') {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!regex.test(value)) {
+        mensajeError = "Formato de correo inválido";
+      }
+    } else if (name === 'topeGastosMensuales' || name === 'maximaDeuda') {
+      if (!/^\d+$/.test(value)) {
+        mensajeError = "Solo se permiten números";
+      }
+    }
+    setErrores({ ...errores, [name]: mensajeError });
+  };
+
   const onInputChange = (e) => {
     const { name, value } = e.target;
+    validarCampo(name, value);
     if (name === 'topeGastosMensuales') {
       setUsuario({
         ...usuario,
@@ -132,6 +161,7 @@ export default function EditarUsuarios() {
             onChange={onInputChange}
             required
           />
+          {errores.nombreUsuario && <div className="text-danger">{errores.nombreUsuario}</div>}
         </div>
         <div className='mb-3'>
           <label htmlFor='apellidoUsuario' className='form-label'>Apellido</label>
@@ -144,6 +174,7 @@ export default function EditarUsuarios() {
             onChange={onInputChange}
             required
           />
+          {errores.apellidoUsuario && <div className="text-danger">{errores.apellidoUsuario}</div>}
         </div>
         <div className='mb-3'>
           <label htmlFor='emailUsuario' className='form-label'>Email</label>
@@ -156,6 +187,7 @@ export default function EditarUsuarios() {
             onChange={onInputChange}
             required
           />
+          {errores.emailUsuario && <div className="text-danger">{errores.emailUsuario}</div>}
         </div>
 
         <div className='mb-3'>
@@ -193,6 +225,7 @@ export default function EditarUsuarios() {
             onChange={onInputChange}
             required
           />
+          {errores.topeGastosMensuales && <div className="text-danger">{errores.topeGastosMensuales}</div>}
         </div>
 
         <div className='mb-3'>
@@ -206,12 +239,11 @@ export default function EditarUsuarios() {
             onChange={onInputChange}
             required
           />
+          {errores.maximaDeuda && <div className="text-danger">{errores.maximaDeuda}</div>}
         </div>
 
-        <div className="container text-center">
-          <button type="submit" className="btn btn-primary">Guardar</button>
-          <Link to='/' className='btn btn-danger'>Volver</Link>
-        </div>
+        <button type="submit" className="btn btn-primary">Guardar</button>
+        <Link className='btn btn-danger mx-2' to="/">Cancelar</Link>
       </form>
     </div>
   );
