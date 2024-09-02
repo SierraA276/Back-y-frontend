@@ -14,10 +14,17 @@ export default function Navegacion() {
             <Link className="nav-link" to="/">Inicio</Link>
           </li>
           <li className="nav-item">
-          <Link className="nav-link" to="/agregar">Registrar Usuarios</Link>
+            <Link className="nav-link" to="/agregar">Registrar Usuarios</Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/productos">Productos</Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/agregar-producto">Registrar Producto</Link>
           </li>
         </ul>
       </div>
     </nav>
   );
 }
+
