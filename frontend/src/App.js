@@ -5,6 +5,7 @@ import ListadoUsuarios from './Usuarios/ListadoUsuarios';
 import AgregarUsuarios from './Usuarios/AgregarUsuarios';
 import EditarUsuarios from './Usuarios/EditarUsuarios';
 import ListadoProductos from './Productos/ListadoProductos';
+import AgregarProducto from './Productos/AgregarProductos'; // Importar el componente
 
 function App() {
   return (
@@ -12,10 +13,11 @@ function App() {
       <BrowserRouter>
         <Navegacion />
         <Routes>
-          <Route exact path="/" element={<ListadoUsuarios />} />
-          <Route exact path="/agregar" element={<AgregarUsuarios />} />
-          <Route exact path="/editar/:id" element={<EditarUsuarios />} /> 
-          <Route exact path="/productos" element={<ListadoProductos />} />
+          <Route path="/" element={<ListadoUsuarios />} />
+          <Route path="/agregar" element={<AgregarUsuarios />} />
+          <Route path="/editar/:id" element={<EditarUsuarios />} />
+          <Route path="/productos" element={<ListadoProductos />} />
+          <Route path="/agregar-producto" element={<AgregarProducto />} /> {/* Nueva ruta */}
         </Routes>
       </BrowserRouter>
     </div>

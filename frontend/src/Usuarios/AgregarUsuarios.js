@@ -50,7 +50,7 @@ export default function AgregarUsuario() {
         cargarDatos();
     }, []);
 
-    const validarNombre = (nombre) => /^[a-zA-ZáéíóúüñÑ\s]+$/.test(nombre);
+    const validarNombre = (nombre) => /^[a-zA-Záéíóúünpm start\s]+$/.test(nombre);
 
     const validarEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 

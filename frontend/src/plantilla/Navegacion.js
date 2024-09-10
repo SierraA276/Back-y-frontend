@@ -20,7 +20,7 @@ export default function Navegacion() {
             <Link className="nav-link" to="/productos">Productos</Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/agregar-producto">Registrar Producto</Link>
+            <Link className="nav-link" to="/agregar-producto">Registrar Un Producto</Link>
           </li>
         </ul>
       </div>
