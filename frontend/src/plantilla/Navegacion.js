@@ -22,9 +22,9 @@ export default function Navegacion() {
           <li className="nav-item">
             <Link className="nav-link" to="/agregar-producto">Registrar Un Producto</Link>
           </li>
+
         </ul>
       </div>
     </nav>
   );
 }
-
