@@ -18,9 +18,10 @@ public class Producto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idProducto;
 
+    private String ImgProducto;
     private String NombreProducto;
     private String DescripcionProducto;
-    private Integer PrecioUnitario;
+    private Double PrecioUnitario;
     private Double stock;
 
     @OneToMany(mappedBy = "producto")

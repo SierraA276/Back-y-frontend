@@ -56,7 +56,7 @@ export default function ListadoProductos() {
               <td>{producto.precioUnitario}</td>
               <td>{producto.stock}</td>
               <td>
-                {producto.facturaIds.length > 0 ? (
+                {(producto.facturaIds) && producto.facturaIds.length > 0 ? (
                   <ul>
                     {producto.facturaIds.map((facturaId, idx) => (
                       <li key={idx}>{`Factura ID: ${facturaId}`}</li>
@@ -66,6 +66,7 @@ export default function ListadoProductos() {
                   "Sin facturas"
                 )}
               </td>
+
               <td>
                 <div>
                   <Link
